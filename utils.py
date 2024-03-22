@@ -15,5 +15,5 @@ class SD_Dataset(Dataset):
     def __len__(self):
         return sum(len(files for dirp, dirn, files in os.walk(self.root_dir)))
     
-    def __getitem__(self):
-        pass
+    def __getitem__(self, idx):
+        class_idx = 0
