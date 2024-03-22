@@ -38,7 +38,8 @@ def make_cnn(input_shape = (1, 28, 28), num_of_classes = 3, hid_layers = [64, 64
             layers.append(nn.Linear(in_dim, out_dim))
             layers.append(activation_fun[act_fn])
 
-        layers.append(nn.Linear(hid_layers[-1], num_of_classes))
+    layers.append(nn.Linear(hid_layers[-1], num_of_classes))
+    layers.append(nn.Softmax())
 
     return nn.Sequential(*layers)
 
