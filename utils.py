@@ -16,4 +16,20 @@ class SD_Dataset(Dataset):
         return sum(len(files for dirp, dirn, files in os.walk(self.root_dir)))
     
     def __getitem__(self, idx):
-        class_idx = 0
+        
+        for class_idx, class_name in enumerate(self.classes):
+            class_dir = os.path.join(self.root_dir, class_name)
+            print(class_dir)
+            files = os.listdir(class_dir)
+            if idx < len(files):
+                break
+            idx -= len(files)
+
+        filename = os.path.join(class_dir, files[idx])
+        image = Image.open(filename)
+        label = class_name
+        return image, label
+        
+
+
+        
