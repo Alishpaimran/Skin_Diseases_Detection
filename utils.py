@@ -1,3 +1,4 @@
+import torch.nn as nn
 import torch
 import os
 from PIL import Image
@@ -13,13 +14,12 @@ class SD_Dataset(Dataset):
 
 
     def __len__(self):
-        return sum(len(files for dirp, dirn, files in os.walk(self.root_dir)))
+        return sum(len(files) for dirp, dirn, files in os.walk(self.root_dir))
     
     def __getitem__(self, idx):
         
         for class_idx, class_name in enumerate(self.classes):
             class_dir = os.path.join(self.root_dir, class_name)
-            print(class_dir)
             files = os.listdir(class_dir)
             if idx < len(files):
                 break
@@ -28,8 +28,7 @@ class SD_Dataset(Dataset):
         filename = os.path.join(class_dir, files[idx])
         image = Image.open(filename)
         label = class_name
-        return image, label
-        
-
-
-        
+        if self.transform is not None:
+            return self.transform(image), label
+        else:
+            return image, label
