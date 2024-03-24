@@ -46,8 +46,6 @@ def make_cnn(dataset: ImageFolder, hid_layers = [64, 64],
             layers.append(activation_fun[act_fn])
 
     layers.append(nn.Linear(hid_layers[-1], num_of_classes))
-    # layers.append(nn.Softmax())
-
     return nn.Sequential(*layers)
 
         
