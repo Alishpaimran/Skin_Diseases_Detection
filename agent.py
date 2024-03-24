@@ -5,10 +5,51 @@ import numpy as np
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from nets import make_cnn
+import tqdm
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 print(f'using {pu}')
+
+class skdi_detector:
+    def __init__(self, model, optimizer, loss_fn, clip_grad):
+        self.dataset = Dataset()
+        self.model = model
+        self.optimizer = optimizer
+        self.loss_fn = loss_fn
+        self.clip_grad = clip_grad
+        
+
+    def train_step(self)
+        
+        train_loss, train_acc = 0.0, 0.0
+
+        for _, (x, y) in enumerate(self.dataset.train_dl):
+            x, y = x.to(pu), y.to(pu)
+            y_pred_logits = model(x)
+
+            loss = loss_fn(y_pred_logits, y)
+            train_loss += loss.item()
+
+            optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), clip_grad)
+            optimizer.step()
+
+            y_pred = torch.argmax(torch.softmax(y_pred_logits, dim=-1), dim=-1)
+            train_acc += (y_pred == y).sum().item()/len(y)
+        
+        train_loss /= len(dataloader)
+        train_acc /= len(dataloader)
+
+        return train_loss, train_acc
+
+    def train(self, epochs):
+
+        for epoch in tqdm(range(range(epochs))):
+            train_loss, train_acc = 
+
+
 
 def train_step(dataloader: DataLoader,
                model, loss_fn, optimizer, clip_grad=0.5):
@@ -36,22 +77,24 @@ def train_step(dataloader: DataLoader,
 
 def validate_step(dataloader: DataLoader,
                model, loss_fn):
-    train_loss, train_acc = 0.0, 0.0
+    val_loss, val_acc = 0.0, 0.0
     with torch.no_grad():
         for _, (x, y) in enumerate(dataloader):
             x, y = x.to(pu), y.to(pu)
             y_pred_logits = model(x)
 
             loss = loss_fn(y_pred_logits, y)
-            train_loss += loss.item()
+            val_loss += loss.item()
 
             y_pred = torch.argmax(torch.softmax(y_pred_logits, dim=-1), dim=-1)
-            train_acc += (y_pred == y).sum().item()/len(y)
+            val_acc += (y_pred == y).sum().item()/len(y)
     
-    train_loss /= len(dataloader)
-    train_acc /= len(dataloader)
+    val_loss /= len(dataloader)
+    val_acc /= len(dataloader)
 
-    return train_loss, train_acc
+    return val_loss, val_acc
+
+def train(train_ds, val_ds, optimizer, )
 
 
 

@@ -28,33 +28,37 @@ conv_layers = [[128, 5, 1],
 # train_ds = SD_Dataset(TRAINING_FOLDER, None)
 
 test_ds = datasets.ImageFolder(TESTING_FOLDER, test_trans)
+batch_size = len(test_ds)
+test_dl = DataLoader(test_ds,shuffle=True,
+                     num_workers=4, batch_size=batch_size)
 
-test_dl = DataLoader(test_ds, batch_size=10, shuffle=True,
-                     num_workers=4)
+print(test_ds[0])
 
-model = make_cnn(dataset=test_ds, conv_layers = conv_layers, 
-                 max_pool = [2, 2], hid_layers = [64], pooling_after_layers=2).to(pu)
+# model = make_cnn(dataset=test_ds, conv_layers = conv_layers, 
+#                  max_pool = [2, 2], hid_layers = [64], pooling_after_layers=2).to(pu)
 
-
-print(model)
-# img = np.expand_dims(test_ds.__getitem__(0)[0], 0)
 
 # print(model)
+# # img = np.expand_dims(test_ds.__getitem__(0)[0], 0)
 
-train_acc = 0.0
+# # print(model)
 
-for batch, (x, y) in enumerate(test_dl):
-    if batch ==0:
-        x = x.to(pu)
-        y = y.to(pu)
-        print(x.shape)
-        y_pred = model(x)
-        print(f"{y_pred =}")
-        y_pred_prob = torch.argmax(torch.softmax(y_pred, dim=-1), dim=-1)
-        print(f'{y = }')
-        print(f'{y_pred_prob = }')
+# train_acc = 0.0
 
-        train_acc = (y_pred_prob == y).sum().item()/len(y)
-        print(f'{train_acc = }')
+# for batch, (x, y) in enumerate(test_dl):
+#     if batch ==0:
+#         print(y)
+#         print(len(y))
+        # x = x.to(pu)
+        # y = y.to(pu)
+        # print(x.shape)
+        # y_pred = model(x)
+        # print(f"{y_pred =}")
+        # y_pred_prob = torch.argmax(torch.softmax(y_pred, dim=-1), dim=-1)
+        # print(f'{y = }')
+        # print(f'{y_pred_prob = }')
+
+        # train_acc = (y_pred_prob == y).sum().item()/len(y)
+        # print(f'{train_acc = }')
 
 
