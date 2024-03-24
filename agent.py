@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from nets import make_cnn
 import tqdm
+from dataset import Dataset
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -20,7 +21,7 @@ class skdi_detector:
         self.clip_grad = clip_grad
         
 
-    def train_step(self)
+    def train_step(self):
         
         train_loss, train_acc = 0.0, 0.0
 
@@ -28,19 +29,19 @@ class skdi_detector:
             x, y = x.to(pu), y.to(pu)
             y_pred_logits = model(x)
 
-            loss = loss_fn(y_pred_logits, y)
+            loss = self.loss_fn(y_pred_logits, y)
             train_loss += loss.item()
 
-            optimizer.zero_grad()
+            self.optimizer.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), clip_grad)
-            optimizer.step()
+            torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), self.clip_grad)
+            self.optimizer.step()
 
             y_pred = torch.argmax(torch.softmax(y_pred_logits, dim=-1), dim=-1)
             train_acc += (y_pred == y).sum().item()/len(y)
         
-        train_loss /= len(dataloader)
-        train_acc /= len(dataloader)
+        train_loss /= len(self.dataset.train_dl)
+        train_acc /= len(self.dataset.train_dl)
 
         return train_loss, train_acc
 
