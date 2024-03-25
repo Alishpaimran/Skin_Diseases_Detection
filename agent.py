@@ -21,6 +21,10 @@ class skdi_detector(Utils):
         self.plot_file = f'{PLOT_FOLDER}/{self.name}_plot.txt'
         self.param_file = f'{PARAM_FOLDER}/{self.name}_param.txt'
         self.param = self.check_param_file()
+        self.metric_param = metric_param
+        self.acc_param = False
+        if self.metric_param in ['train_acc', 'val_acc']:
+            self.acc_param = True
 
     def train_step(self):
         train_loss, train_acc = 0.0, 0.0
@@ -69,9 +73,13 @@ class skdi_detector(Utils):
             train_loss, train_acc = self.train_step()
             val_loss, val_acc = self.validate_step()
 
+            metric_param = {'train_loss': train_loss, 'train_acc': train_acc,
+                            'val_loss': val_loss, 'val_acc': val_acc}
+            
             print(f'epochs: {ep}\t{train_loss = :.4f}\t{train_acc = :.4f}\t{val_loss = :.4f}\t{val_acc = :.4f}')
             self.write_plot_data([train_loss, train_acc, val_loss, val_acc])
             self.save_check_interval(epoch=ep, interval=1)
+            self.save_best_model(acc_param=self.acc_param, param=metric_param[self.metric_param])
 
 
 
