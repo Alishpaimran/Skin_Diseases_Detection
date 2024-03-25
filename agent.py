@@ -25,14 +25,14 @@ class skdi_detector:
         train_loss, train_acc = 0.0, 0.0
         for _, (x, y) in enumerate(self.dataset.train_dl):
             x, y = x.to(pu), y.to(pu)
-            y_pred_logits = model(x)
+            y_pred_logits = self.model(x)
 
             loss = self.loss_fn(y_pred_logits, y)
             train_loss += loss.item()
 
             self.optimizer.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), self.clip_grad)
+            torch.nn.utils.clip_grad.clip_grad_norm_(self.model.parameters(), self.clip_grad)
             self.optimizer.step()
 
             y_pred = torch.argmax(torch.softmax(y_pred_logits, dim=-1), dim=-1)
@@ -48,7 +48,7 @@ class skdi_detector:
         with torch.no_grad():
             for _, (x, y) in enumerate(self.dataset.val_dl):
                 x, y = x.to(pu), y.to(pu)
-                y_pred_logits = model(x)
+                y_pred_logits = self.model(x)
 
                 loss = self.loss_fn(y_pred_logits, y)
                 val_loss += loss.item()
@@ -62,66 +62,15 @@ class skdi_detector:
         return val_loss, val_acc
 
 
-
     def train(self, epochs):
 
         self.model.train()
+        print(f'training for {epochs} epochs....')
         for epoch in tqdm(range(range(epochs))):
             train_loss, train_acc = self.train_step()
-            val_loss, val_acc = self.
+            val_loss, val_acc = self.validate_step()
 
-def validate_step(dataloader: DataLoader,
-               model, loss_fn):
-    val_loss, val_acc = 0.0, 0.0
-    with torch.no_grad():
-        for _, (x, y) in enumerate(dataloader):
-            x, y = x.to(pu), y.to(pu)
-            y_pred_logits = model(x)
+            print(f'epochs: {epoch}\t{train_loss = }\t{train_acc = }\t{val_loss = }\t{val_acc = }')
 
-            loss = loss_fn(y_pred_logits, y)
-            val_loss += loss.item()
-
-            y_pred = torch.argmax(torch.softmax(y_pred_logits, dim=-1), dim=-1)
-            val_acc += (y_pred == y).sum().item()/len(y)
-    
-    val_loss /= len(dataloader)
-    val_acc /= len(dataloader)
-
-    return val_loss, val_acc
-
-
-
-
-
-test_trans = tf.Compose([
-    tf.Resize([256, 256]),
-    tf.RandomHorizontalFlip(),
-    tf.RandomVerticalFlip(),
-    tf.ToTensor()
-])
-
-conv_layers = [[128, 5, 1],
-               [64, 3, 1],
-               [32, 3, 1],
-               [16, 3, 1]]
-
-# test_ds = SD_Dataset(TESTING_FOLDER, test_trans)
-# train_ds = SD_Dataset(TRAINING_FOLDER, None)
-
-test_ds = datasets.ImageFolder(TESTING_FOLDER, test_trans)
-
-test_dl = DataLoader(test_ds, batch_size=1, shuffle=True,
-                     num_workers=4)
-
-model = make_cnn(dataset=test_ds, conv_layers = conv_layers, 
-                 max_pool = [2, 2], hid_layers = [64], pooling_after_layers=2)
-
-img = np.expand_dims(test_ds.__getitem__(0)[0], 0)
-
-print(model)
-
-pred = model(torch.tensor(img, dtype=torch.float32))
-
-print(pred)
 
 

@@ -6,15 +6,6 @@ import os
 
 workers = os.cpu_count()
 
-test_trans = tf.Compose([
-    tf.Resize([256, 256]),
-    tf.RandomHorizontalFlip(),
-    tf.RandomVerticalFlip(),
-    tf.ToImageTensor(),
-    tf.ConvertImageDtype()
-])
-
-
 class Dataset:
     def __init__(self, train_trans, test_trans, train_batch_size = 32, val_rat = 0.2):
         self._ds = ImageFolder(TRAINING_FOLDER, train_trans)
