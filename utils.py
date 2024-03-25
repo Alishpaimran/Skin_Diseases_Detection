@@ -1,13 +1,14 @@
 import torch
+import os
 from paths import CHECKPOINT_FOLDER
+
 
 class Utils:
     def __init__(self):
         self.model = None
         self.model_file = ''
         self.plot_file = ''
-        self.net_type = ''
-        self.max_rewards = 0
+        self.min_loss = 0
 
     def read_file(self, path):
         file = open(path, 'r')
@@ -39,7 +40,9 @@ class Utils:
             yaml.safe_dump(args, file)
 
     def check_status_file(self):
-        checkpath = self.read_file(STATUSFILE)
+        if not os.path.exists(self.status_file):
+            self.create_file(self.status_file)
+        checkpath = self.read_file(self.status_file)
         epoch = 0
         if checkpath != '':
             epoch = self.load_checkpoint(checkpath) + 1
@@ -51,29 +54,20 @@ class Utils:
         else:
             file = open(self.plot_file, 'w')
             file.close()
-            self.write_file(self.plot_file, 'Rewards\n')
-            epoch = 0
+            self.write_file(self.plot_file, 'Train_loss,Train_acc,Valid_loss,Valid_acc\n')
         return epoch
 
-    def write_plot_data(self, rewards):
-        self.write_file(self.plot_file, f'{rewards}\n')
+    def write_plot_data(self, data:list):
+        str_data = ','.join(map(str, data))
+        self.write_file(self.plot_file, f'{str_data}\n')
 
     def save_checkpoint(self, epoch, checkpath):
-        file = open(STATUSFILE, 'w')
-        if self.net_is_shared:
-            checkpoint = {
-                'model_state_dict': self.model.state_dict(),
-                'optim_state_dict': self.optim.state_dict(),
-                'epoch': epoch
-            }
-        else:
-             checkpoint = {
-                'actor_state_dict': self.actor.state_dict(),
-                'act_optim_state_dict': self.act_optim.state_dict(),
-                'critic_state_dict': self.critic.state_dict(),
-                'crit_optim_state_dict': self.crit_optim.state_dict(),
-                'epoch': epoch
-            }
+        checkpoint = {
+            'model_state_dict': self.model.state_dict(),
+            'optim_state_dict': self.optim.state_dict(),
+            'epoch': epoch
+        }
+        file = open(self.status_file, 'w')
         file.write(checkpath)
         file.close()
         torch.save(checkpoint, checkpath)
@@ -82,17 +76,9 @@ class Utils:
     def load_checkpoint(self, checkpath):
         print('loading checkpoint..')
         checkpoint = torch.load(checkpath)
-        if self.net_is_shared:
-            self.model.load_state_dict(checkpoint['model_state_dict'])
-            self.optim.load_state_dict(checkpoint['optim_state_dict'])
-            self.model.train()
-        else:
-            self.actor.load_state_dict(checkpoint['actor_state_dict'])
-            self.critic.load_state_dict(checkpoint['critic_state_dict'])
-            self.act_optim.load_state_dict(checkpoint['act_optim_state_dict'])
-            self.crit_optim.load_state_dict(checkpoint['crit_optim_state_dict'])
-            self.actor.train()
-            self.critic.train()
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.optim.load_state_dict(checkpoint['optim_state_dict'])
+        self.model.train()
         print('checkpoint loaded...')
         return checkpoint['epoch']
     

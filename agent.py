@@ -1,25 +1,24 @@
 import torch
 import torchvision.transforms.v2 as tf
-from paths import TRAINING_FOLDER, TESTING_FOLDER
-import numpy as np
-from torch.utils.data import DataLoader
-from torchvision import datasets
-from nets import make_cnn
 import tqdm
 from dataset import Dataset
+from paths import STATUS_FOLDER, PLOT_FOLDER
+from utils import Utils
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 print(f'using {pu}')
 
-class skdi_detector:
-    def __init__(self, model, optimizer, loss_fn, clip_grad):
+class skdi_detector(Utils):
+    def __init__(self,model, optimizer, loss_fn, clip_grad, name):
         self.dataset = Dataset()
         self.model = model
         self.optimizer = optimizer
         self.loss_fn = loss_fn
         self.clip_grad = clip_grad
-        
+        self.name = name
+        self.status_file = f'{STATUS_FOLDER}/{self.name}_status.txt'
+        self.plot_file = f'{PLOT_FOLDER}/{self.name}_plot.txt'
 
     def train_step(self):
         train_loss, train_acc = 0.0, 0.0
@@ -70,7 +69,10 @@ class skdi_detector:
             train_loss, train_acc = self.train_step()
             val_loss, val_acc = self.validate_step()
 
-            print(f'epochs: {epoch}\t{train_loss = }\t{train_acc = }\t{val_loss = }\t{val_acc = }')
+            print(f'epochs: {epoch}\t{train_loss = :.4f}\t{train_acc = :.4f}\t{val_loss = :.4f}\t{val_acc = :.4f}')
+            self.write_plot_data([train_loss, train_acc, val_loss, val_acc])
+            self.save_check_interval(epoch=epoch, interval=1)
+
 
 
 

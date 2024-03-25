@@ -6,5 +6,6 @@ DATASET_FOLDER = f"{home_folder}/skdi_dataset"
 TRAINING_FOLDER = f'{DATASET_FOLDER}/Training'
 TESTING_FOLDER = f'{DATASET_FOLDER}/Testing'
 CHECKPOINT_FOLDER = f'{WORKSPACE}/checkpoints'
-STATUS_FILE = f'{WORKSPACE}/status.txt'
+STATUS_FOLDER = f'{WORKSPACE}/status'
+PLOT_FOLDER = f'{WORKSPACE}/plots'
 
