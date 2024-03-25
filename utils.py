@@ -37,8 +37,12 @@ class Utils:
         return path
     
     def save_config(self, args: dict):
+        if not os.path.exists(self.config_file):
+            self.create_file(self.config_file)
         with open(self.config_file, 'w') as file:
             yaml.safe_dump(args, file)
+        file.close()
+
 
     def check_status_file(self):
         if not os.path.exists(self.status_file):

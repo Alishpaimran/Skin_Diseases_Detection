@@ -73,6 +73,7 @@ class skdi_detector(Utils):
         self.model = make_cnn(self.dataset.train_ds, self.hid_layers, self.act_fn,
                               self.max_pool, self.pool_after_layers, self.conv_layers)
         self.optimzer = Adam(self.model.parameters(), lr=self.lr, eps=1e-6, weight_decay=1e-5)
+        print(self.model)
 
 
     def train(self, epochs):
