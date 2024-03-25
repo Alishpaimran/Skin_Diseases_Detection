@@ -3,6 +3,8 @@ import os
 from paths import CHECKPOINT_FOLDER
 import yaml
 
+def convert(**kwargs):
+    return kwargs
 
 class Utils:
     def __init__(self):

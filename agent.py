@@ -1,4 +1,5 @@
 import torch
+from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
 import torchvision.transforms.v2 as tf
 import tqdm
@@ -12,12 +13,9 @@ pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'using {pu}')
 
 class skdi_detector(Utils):
-    def __init__(self,model, optimizer, loss_fn, clip_grad, name):
+    def __init__(self,name, ):
         self.dataset = Dataset()
-        self.model = model
-        self.optimizer = optimizer
-        self.loss_fn = loss_fn
-        self.clip_grad = clip_grad
+        self.loss_fn = CrossEntropyLoss()
         self.name = name
         self.status_file = f'{STATUS_FOLDER}/{self.name}_status.txt'
         self.plot_file = f'{PLOT_FOLDER}/{self.name}_plot.txt'
@@ -25,6 +23,7 @@ class skdi_detector(Utils):
         self.config_file = f'{CONFIG_FOLDER}/{self.name}_config.yaml'
         self.param = self.check_param_file()
         self.metric_param = metric_param
+        self.clip_grad = clip_grad
         self.acc_param = False
         if self.metric_param in ['train_acc', 'val_acc']:
             self.acc_param = True
