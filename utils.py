@@ -45,7 +45,7 @@ class Utils:
         checkpath = self.read_file(self.status_file)
         epoch = 0
         if checkpath != '':
-            epoch = self.load_checkpoint(checkpath) + 1
+            epoch = self.load_checkpoint(checkpath)
             file = open(self.plot_file, 'r')
             lines = file.readlines()
             file = open(self.plot_file, 'w')
@@ -54,7 +54,8 @@ class Utils:
         else:
             file = open(self.plot_file, 'w')
             file.close()
-            self.write_file(self.plot_file, 'Train_loss,Train_acc,Valid_loss,Valid_acc\n')
+            self.write_file(self.plot_file,'Train_loss,Train_acc,Valid_loss,Valid_acc\n')
+            self.model.train()
         return epoch
 
     def write_plot_data(self, data:list):
@@ -89,39 +90,28 @@ class Utils:
     
     def load_model(self):
         print('loading model...')
-        if self.net_is_shared:
-            self.model.load_state_dict(torch.load(self.model_file))
-            self.model.eval()
-        else:
-            model = torch.load(self.model_file)
-            self.actor.load_state_dict(model['actor_state_dict'])
-            self.critic.load_state_dict(model['critic_state_dict'])
-            self.actor.eval()
-            self.critic.eval()
+        self.model.load_state_dict(torch.load(self.model_file))
+        self.model.eval()
         print('model loaded...')
 
     def save_model(self):
-        if not self.net_is_shared:
-            model = {
-                'actor_state_dict': self.actor.state_dict(),
-                'critic_state_dict': self.critic.state_dict()
-            }
-            torch.save(model, self.model_file)
-        else:
-            torch.save(self.model.state_dict(), self.model_file)
+        torch.save(self.model.state_dict(), self.model_file)
         print('model saved...')
 
-    def save_best_model(self, rewards):
-        if rewards > self.max_rewards:
-            self.max_rewards = rewards
-            self.write_file(self.reward_file, f'{rewards}')
-            self.save_model()
-
-    def check_rewards_file(self):
-        if os.path.exists(self.reward_file):
-            reward = float(self.read_file(self.reward_file))
+    def save_best_model(self, param, acc_param=True):
+        if acc_param:
+           param_ = max(param, self.param)
         else:
-            self.create_file(self.reward_file)
-            reward = -1000.0
-            self.write_file(self.reward_file, f'{reward}')
-        return reward
+            param_ = min(param, self.param)
+        self.param = param_
+        self.write_file(self.param_file, f'{param_}')
+        self.save_model()
+
+    def check_param_file(self):
+        if os.path.exists(self.param_file):
+            param = float(self.read_file(self.param_file))
+        else:
+            self.create_file(self.param_file)
+            param = -1000.0
+            self.write_file(self.param_file, f'{param}')
+        return param

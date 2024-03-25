@@ -2,7 +2,7 @@ import torch
 import torchvision.transforms.v2 as tf
 import tqdm
 from dataset import Dataset
-from paths import STATUS_FOLDER, PLOT_FOLDER
+from paths import STATUS_FOLDER, PLOT_FOLDER, PARAM_FOLDER
 from utils import Utils
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -19,6 +19,8 @@ class skdi_detector(Utils):
         self.name = name
         self.status_file = f'{STATUS_FOLDER}/{self.name}_status.txt'
         self.plot_file = f'{PLOT_FOLDER}/{self.name}_plot.txt'
+        self.param_file = f'{PARAM_FOLDER}/{self.name}_param.txt'
+        self.param = self.check_param_file()
 
     def train_step(self):
         train_loss, train_acc = 0.0, 0.0
@@ -57,21 +59,19 @@ class skdi_detector(Utils):
         
         val_loss /= len(self.dataset.val_dl)
         val_acc /= len(self.dataset.val_dl)
-
         return val_loss, val_acc
 
-
     def train(self, epochs):
-
-        self.model.train()
+        epoch = 0
+        epoch = self.check_status_file()
         print(f'training for {epochs} epochs....')
-        for epoch in tqdm(range(range(epochs))):
+        for ep in tqdm(range(range(epoch, epochs+1))):
             train_loss, train_acc = self.train_step()
             val_loss, val_acc = self.validate_step()
 
-            print(f'epochs: {epoch}\t{train_loss = :.4f}\t{train_acc = :.4f}\t{val_loss = :.4f}\t{val_acc = :.4f}')
+            print(f'epochs: {ep}\t{train_loss = :.4f}\t{train_acc = :.4f}\t{val_loss = :.4f}\t{val_acc = :.4f}')
             self.write_plot_data([train_loss, train_acc, val_loss, val_acc])
-            self.save_check_interval(epoch=epoch, interval=1)
+            self.save_check_interval(epoch=ep, interval=1)
 
 
 
