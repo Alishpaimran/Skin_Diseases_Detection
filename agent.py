@@ -22,9 +22,7 @@ class skdi_detector:
         
 
     def train_step(self):
-        
         train_loss, train_acc = 0.0, 0.0
-
         for _, (x, y) in enumerate(self.dataset.train_dl):
             x, y = x.to(pu), y.to(pu)
             y_pred_logits = model(x)
@@ -44,37 +42,33 @@ class skdi_detector:
         train_acc /= len(self.dataset.train_dl)
 
         return train_loss, train_acc
+    
+    def validate_step(self):
+        val_loss, val_acc = 0.0, 0.0
+        with torch.no_grad():
+            for _, (x, y) in enumerate(self.dataset.val_dl):
+                x, y = x.to(pu), y.to(pu)
+                y_pred_logits = model(x)
+
+                loss = self.loss_fn(y_pred_logits, y)
+                val_loss += loss.item()
+
+                y_pred = torch.argmax(torch.softmax(y_pred_logits, dim=-1), dim=-1)
+                val_acc += (y_pred == y).sum().item()/len(y)
+        
+        val_loss /= len(self.dataset.val_dl)
+        val_acc /= len(self.dataset.val_dl)
+
+        return val_loss, val_acc
+
+
 
     def train(self, epochs):
 
+        self.model.train()
         for epoch in tqdm(range(range(epochs))):
-            train_loss, train_acc = 
-
-
-
-def train_step(dataloader: DataLoader,
-               model, loss_fn, optimizer, clip_grad=0.5):
-    train_loss, train_acc = 0.0, 0.0
-
-    for _, (x, y) in enumerate(dataloader):
-        x, y = x.to(pu), y.to(pu)
-        y_pred_logits = model(x)
-
-        loss = loss_fn(y_pred_logits, y)
-        train_loss += loss.item()
-
-        optimizer.zero_grad()
-        loss.backward()
-        torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), clip_grad)
-        optimizer.step()
-
-        y_pred = torch.argmax(torch.softmax(y_pred_logits, dim=-1), dim=-1)
-        train_acc += (y_pred == y).sum().item()/len(y)
-    
-    train_loss /= len(dataloader)
-    train_acc /= len(dataloader)
-
-    return train_loss, train_acc
+            train_loss, train_acc = self.train_step()
+            val_loss, val_acc = self.
 
 def validate_step(dataloader: DataLoader,
                model, loss_fn):
@@ -95,7 +89,7 @@ def validate_step(dataloader: DataLoader,
 
     return val_loss, val_acc
 
-def train(train_ds, val_ds, optimizer, )
+
 
 
 

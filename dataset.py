@@ -2,6 +2,9 @@ from paths import TRAINING_FOLDER, TESTING_FOLDER
 import torchvision.transforms.v2 as tf
 from torchvision.datasets import ImageFolder
 from torch.utils.data import Subset, DataLoader
+import os
+
+workers = os.cpu_count()
 
 test_trans = tf.Compose([
     tf.Resize([256, 256]),
@@ -21,7 +24,7 @@ class Dataset:
         train_size = len(self._ds) - val_size
 
         self.train_ds, self.val_ds = Subset(self._ds, range(train_size)), Subset(self._ds, range(train_size, ds_size))
-        self.train_dl = DataLoader(self.train_ds, batch_size=train_batch_size, shuffle=True, num_workers=4)
-        self.test_dl = DataLoader(self.test_ds, batch_size=train_batch_size, shuffle=True, num_workers=4)
-        self.val_dl = DataLoader(self.val_ds, batch_size=train_batch_size, shuffle=True, num_workers=4)
+        self.train_dl = DataLoader(self.train_ds, batch_size=train_batch_size, shuffle=True, num_workers=workers)
+        self.test_dl = DataLoader(self.test_ds, batch_size=train_batch_size, shuffle=True, num_workers=workers)
+        self.val_dl = DataLoader(self.val_ds, batch_size=train_batch_size, shuffle=True, num_workers=workers)
 
