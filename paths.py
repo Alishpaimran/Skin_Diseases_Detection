@@ -1,7 +1,7 @@
 from os import environ
 
 home_folder = environ.get('HOME')
-WORKSPACE = f'{home_folder}/Skin_Disease_Detection'
+WORKSPACE = f'{home_folder}/Skin_Diseases_Detection'
 DATASET_FOLDER = f"{home_folder}/skdi_dataset"
 TRAINING_FOLDER = f'{DATASET_FOLDER}/Training'
 TESTING_FOLDER = f'{DATASET_FOLDER}/Testing'

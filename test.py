@@ -1,15 +1,22 @@
 import torchvision
 torchvision.disable_beta_transforms_warning()
-import torchvision.transforms.v2 as tf
-from warnings import warn
+import matplotlib.pyplot as plt
+from agent import skdi_detector
+from specs import Params
+import numpy as np
+import torch
+params = Params()
 
 
-train_ds = tf.Compose([
-    tf.Resize((128, 128)),
-    tf.RandomHorizontalFlip(),
-    tf.ColorJitter()
-    
-])
+agent = skdi_detector(params)
 
+agent.create_model()
+# agent.show_random_images()
 
-print(train_ds)
+img = agent.dataset._ds.__getitem__(77)[0]
+
+img = torch.tensor(np.expand_dims(img, 0))
+
+pred = agent.model(img)
+
+print(pred)

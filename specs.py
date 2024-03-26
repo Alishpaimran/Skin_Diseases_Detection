@@ -6,9 +6,7 @@ from utils import convert
 
 class Params:
     def __init__(self):
-        self = Params()
-        self.model_specs = Params()
-        self.name = 'example_model'
+        self.name = 'model'
         self.conv_layers = [[128, 3, 1],
                             [64, 3, 1],
                             [32, 3, 1],
@@ -22,6 +20,12 @@ class Params:
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
         self.batch_size = 32
-        self.test_trans = None
-        self.train_trans = None
+        self.test_trans = tf.Compose([
+            tf.Resize(size = (256,256))
+        ])
+        self.train_trans = tf.Compose([
+            tf.Resize(size=(256, 256)),
+            tf.ToImageTensor(),
+            tf.ConvertImageDtype()
+        ])
         self.val_rat = 0.2

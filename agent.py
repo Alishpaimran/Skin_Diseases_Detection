@@ -72,11 +72,15 @@ class skdi_detector(Utils):
     
     
     def create_model(self):
-        self.model = make_cnn(self.dataset.train_ds, self.params.hid_layers, self.params.act_fn,
+        self.model = make_cnn(self.dataset._ds, self.params.hid_layers, self.params.act_fn,
                               self.params.max_pool, self.params.pool_after_layers, self.params.conv_layers)
         self.optimzer = Adam(self.model.parameters(), lr=self.params.lr, eps=1e-6, weight_decay=1e-5)
-        print(self.model)
-
+        print(f'Model: {self.model}')
+        print(f'Number of classes: {self.dataset._ds.classes}')
+        print(f'Input image size: {self.dataset._ds.__getitem__(0)[0][0].shape}')
+        
+    def show_random_images(self):
+        pass
 
     def train(self):
         epochs = self.params.epochs

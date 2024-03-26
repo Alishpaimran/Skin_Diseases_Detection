@@ -29,7 +29,8 @@ class Utils:
         file.close()
 
     def create_file(self, path):
-        file = open(path, 'w')
+        with open(path, 'w') as file:
+            pass
         file.close()
 
     def create_checkpoint_file(self, num):
