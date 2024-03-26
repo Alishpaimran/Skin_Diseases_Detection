@@ -6,7 +6,8 @@ import tqdm
 from nets import make_cnn
 from dataset import Dataset
 from paths import STATUS_FOLDER, PLOT_FOLDER, PARAM_FOLDER, CONFIG_FOLDER
-from utils import Utils, Params
+from utils import Utils
+from specs import Params
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -15,7 +16,8 @@ print(f'using {pu}')
 class skdi_detector(Utils):
     def __init__(self,params: Params):
         self.params = params
-        self.dataset = Dataset()
+        self.dataset = Dataset(train_trans=params.train_trans, test_trans=params.test_trans,
+                               train_batch_size=params.batch_size, val_rat=params.val_rat)
         self.loss_fn = CrossEntropyLoss()
         self.name = params.name
         self.status_file = f'{STATUS_FOLDER}/{self.name}_status.txt'
