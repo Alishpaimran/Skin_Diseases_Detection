@@ -6,24 +6,25 @@ import tqdm
 from nets import make_cnn
 from dataset import Dataset
 from paths import STATUS_FOLDER, PLOT_FOLDER, PARAM_FOLDER, CONFIG_FOLDER
-from utils import Utils
+from utils import Utils, Params
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 print(f'using {pu}')
 
 class skdi_detector(Utils):
-    def __init__(self,name, ):
+    def __init__(self,params: Params):
+        self.params = params
         self.dataset = Dataset()
         self.loss_fn = CrossEntropyLoss()
-        self.name = name
+        self.name = params.name
         self.status_file = f'{STATUS_FOLDER}/{self.name}_status.txt'
         self.plot_file = f'{PLOT_FOLDER}/{self.name}_plot.txt'
         self.param_file = f'{PARAM_FOLDER}/{self.name}_param.txt'
         self.config_file = f'{CONFIG_FOLDER}/{self.name}_config.yaml'
         self.param = self.check_param_file()
-        self.metric_param = metric_param
-        self.clip_grad = clip_grad
+        self.metric_param = params.metric_param
+        self.clip_grad = params.clip_grad
         self.acc_param = False
         if self.metric_param in ['train_acc', 'val_acc']:
             self.acc_param = True
@@ -69,13 +70,14 @@ class skdi_detector(Utils):
     
     
     def create_model(self):
-        self.model = make_cnn(self.dataset.train_ds, self.hid_layers, self.act_fn,
-                              self.max_pool, self.pool_after_layers, self.conv_layers)
-        self.optimzer = Adam(self.model.parameters(), lr=self.lr, eps=1e-6, weight_decay=1e-5)
+        self.model = make_cnn(self.dataset.train_ds, self.params.hid_layers, self.params.act_fn,
+                              self.params.max_pool, self.params.pool_after_layers, self.params.conv_layers)
+        self.optimzer = Adam(self.model.parameters(), lr=self.params.lr, eps=1e-6, weight_decay=1e-5)
         print(self.model)
 
 
-    def train(self, epochs):
+    def train(self):
+        epochs = self.params.epochs
         epoch = 0
         epoch = self.check_status_file()
         print(f'training for {epochs} epochs....')
