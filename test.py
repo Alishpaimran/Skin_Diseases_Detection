@@ -11,12 +11,14 @@ params = Params()
 agent = skdi_detector(params)
 
 agent.create_model()
-# agent.show_random_images()
+agent.plot_images()
 
-img = agent.dataset._ds.__getitem__(77)[0]
 
-img = torch.tensor(np.expand_dims(img, 0))
 
-pred = agent.model(img)
+# img = agent.dataset._ds.__getitem__(77)[0]
 
-print(pred)
+# img = torch.tensor(np.expand_dims(img, 0))
+
+# pred = agent.model(img)
+
+# print(pred)

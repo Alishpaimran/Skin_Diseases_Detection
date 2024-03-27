@@ -8,6 +8,8 @@ from dataset import Dataset
 from paths import STATUS_FOLDER, PLOT_FOLDER, PARAM_FOLDER, CONFIG_FOLDER
 from utils import Utils
 from specs import Params
+import matplotlib.pyplot as plt
+import random
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -79,8 +81,11 @@ class skdi_detector(Utils):
         print(f'Number of classes: {self.dataset._ds.classes}')
         print(f'Input image size: {self.dataset._ds.__getitem__(0)[0][0].shape}')
         
-    def show_random_images(self):
-        pass
+    def plot_images(self):
+        fig, axes = plt.subplots(3, 3, figsize=(10, 10))
+        for i in range(9):
+            ind = random.randint(0, len(self.dataset.train_ds))
+
 
     def train(self):
         epochs = self.params.epochs
