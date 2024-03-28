@@ -72,7 +72,6 @@ class skdi_detector(Utils):
         val_acc /= len(self.dataset.val_dl)
         return val_loss, val_acc
     
-    
     def create_model(self):
         self.model = make_cnn(self.dataset._ds, self.params.hid_layers, self.params.act_fn,
                               self.params.max_pool, self.params.pool_after_layers, self.params.conv_layers)
@@ -84,8 +83,12 @@ class skdi_detector(Utils):
     def plot_images(self):
         fig, axes = plt.subplots(3, 3, figsize=(10, 10))
         for i in range(9):
-            ind = random.randint(0, len(self.dataset.train_ds))
-
+            ind = random.randint(0, len(self.dataset.train_ds)-1)
+            img = self.dataset.train_ds.__getitem__(ind)[0]
+            img = img.numpy()
+            img = img.transpose((1, 2, 0)) if img.shape[0] == 3 else img
+            axes.flat[i].imshow(img)
+            axes.flat[i].axis('off')
 
     def train(self):
         epochs = self.params.epochs
