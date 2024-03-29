@@ -48,4 +48,20 @@ def make_cnn(dataset: ImageFolder, hid_layers = [64, 64],
     layers.append(nn.Linear(hid_layers[-1], num_of_classes))
     return nn.Sequential(*layers)
 
+
+def make_dnn(dataset: ImageFolder, model, hid_layers = [64, 64],
+            act_fn='relu'):
+    layers = []
+    activation_fun = {'relu': nn.ReLU(), 'softplus':nn.Softplus(), 'tanh':nn.Tanh(), 'elu': nn.ELU()}
+    num_of_classes = len(dataset.classes)
+
+    if len(hid_layers) > 1:
+        dim_pairs = zip(hid_layers[:-1], hid_layers[1:])
+        for in_dim, out_dim in list(dim_pairs):
+            layers.append(nn.Linear(in_dim, out_dim))
+            layers.append(activation_fun[act_fn])
+
+    layers.append(nn.Linear(hid_layers[-1], num_of_classes))
+    return nn.Sequential(*layers)
+
         
