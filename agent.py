@@ -10,6 +10,7 @@ from utils import Utils
 from specs import Params
 import matplotlib.pyplot as plt
 import random
+from torchvision import models
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
