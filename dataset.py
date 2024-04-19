@@ -1,4 +1,4 @@
-from paths import TRAINING_FOLDER, TESTING_FOLDER
+from paths import TRAINING_FOLDER, VALIDATION_FOLDER
 import torchvision.transforms.v2 as tf
 from torchvision.datasets import ImageFolder
 from torch.utils.data import Subset, DataLoader
@@ -7,15 +7,10 @@ import os
 workers = os.cpu_count()
 
 class Dataset:
-    def __init__(self, train_trans, test_trans, train_batch_size = 32, val_rat = 0.2):
-        self._ds = ImageFolder(TRAINING_FOLDER, train_trans)
-        self.test_ds = ImageFolder(TESTING_FOLDER, test_trans)
-        ds_size = len(self._ds)
-        val_size = int(val_rat*ds_size)
-        train_size = len(self._ds) - val_size
+    def __init__(self, train_trans, test_trans, train_batch_size = 32, val_batch_size=31):
+        self.train_ds = ImageFolder(TRAINING_FOLDER, train_trans)
+        self.val_ds = ImageFolder(VALIDATION_FOLDER, test_trans)
 
-        self.train_ds, self.val_ds = Subset(self._ds, range(train_size)), Subset(self._ds, range(train_size, ds_size))
-        self.train_dl = DataLoader(self.train_ds, batch_size=train_batch_size, shuffle=True, num_workers=workers)
-        self.test_dl = DataLoader(self.test_ds, batch_size=train_batch_size, shuffle=True, num_workers=workers)
-        self.val_dl = DataLoader(self.val_ds, batch_size=train_batch_size, shuffle=True, num_workers=workers)
+        self.train_dl = DataLoader(self.train_ds, batch_size=train_batch_size, shuffle=True, num_workers=workers, pin_memory=True)
+        self.val_dl = DataLoader(self.val_ds, batch_size=val_batch_size, shuffle=True, num_workers=workers, pin_memory=True)
 

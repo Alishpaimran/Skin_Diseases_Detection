@@ -3,9 +3,6 @@ import os
 from paths import CHECKPOINT_FOLDER
 import yaml
 
-def convert(**kwargs):
-    return kwargs
-
 class Utils:
     def __init__(self):
         self.model = None
@@ -45,7 +42,6 @@ class Utils:
         with open(self.config_file, 'w') as file:
             yaml.safe_dump(args, file)
         file.close()
-
 
     def check_status_file(self):
         if not os.path.exists(self.status_file):
@@ -92,9 +88,14 @@ class Utils:
         return checkpoint['epoch']
     
     def save_check_interval(self, epoch, interval=50):
+        num_checks = 7
         if not(epoch % interval) and epoch > 0:
             checkpath = self.create_checkpoint_file(epoch)
             self.save_checkpoint(epoch, checkpath)
+            files = len(os.listdir(CHECKPOINT_FOLDER))
+            if files > num_checks+1:
+                os.remove(f'{CHECKPOINT_FOLDER}/checkpoint_{epoch-num_checks}.pth')
+
     
     def load_model(self):
         print('loading model...')
@@ -111,9 +112,10 @@ class Utils:
            param_ = max(param, self.param)
         else:
             param_ = min(param, self.param)
-        self.param = param_
-        self.write_file(self.param_file, f'{param_}')
-        self.save_model()
+        if self.param != param_:
+            self.param = param_
+            self.write_file(self.param_file, f'{param_}')
+            self.save_model()
 
     def check_param_file(self):
         if os.path.exists(self.param_file):
