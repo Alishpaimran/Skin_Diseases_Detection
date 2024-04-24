@@ -49,12 +49,23 @@ class Utils:
         checkpath = self.read_file(self.status_file)
         epoch = 0
         if checkpath != '':
-            epoch = self.load_checkpoint(checkpath)
-            file = open(self.plot_file, 'r')
-            lines = file.readlines()
-            file = open(self.plot_file, 'w')
-            file.writelines(lines[:epoch+1])
-            file.close()
+            print(50*'=')
+            q = str(input('Do you want to continue the training (y/n)\nCaution: starting new training will remove all previous checkpoints and plot data: '))
+            if q == 'n':
+                self.write_file(self.status_file, "")
+                for filename in os.listdir(CHECKPOINT_FOLDER):
+                    if filename.startswith('checkpoint'):
+                        file_path = os.path.join(CHECKPOINT_FOLDER, filename)
+                        os.remove(file_path)
+                self.check_status_file()
+                print('checkpoint files deleted and plot data removed!')
+            elif q == 'y':
+                epoch = self.load_checkpoint(checkpath)
+                file = open(self.plot_file, 'r')
+                lines = file.readlines()
+                file = open(self.plot_file, 'w')
+                file.writelines(lines[:epoch+1])
+                file.close()
         else:
             file = open(self.plot_file, 'w')
             file.close()

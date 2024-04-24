@@ -2,7 +2,7 @@ import torch
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
 import torchvision.transforms.v2 as tf
-import tqdm
+from tqdm import tqdm
 from nets import make_cnn
 from dataset import Dataset
 from paths import STATUS_FOLDER, PLOT_FOLDER, PARAM_FOLDER, CONFIG_FOLDER, MODEL_FOLDER
@@ -10,6 +10,7 @@ from utils import Utils
 import matplotlib.pyplot as plt
 import random
 from fixcap import FixCapsNet
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -64,6 +65,8 @@ class skdi_detector(Utils):
 
         train_loss /= len(self.dataset.train_dl)
         train_acc /= len(self.dataset.train_dl)
+        if self.params.schedular:
+            self.schedular.step()
 
         return train_loss, train_acc
     
@@ -83,7 +86,7 @@ class skdi_detector(Utils):
 
                 v_mag = torch.sqrt(torch.sum(output**2, dim=2, keepdim=True)) 
                 pred = v_mag.data.max(1, keepdim=True)[1].cpu().squeeze()
-                val_acc += (pred == target.cpu()).sum().item()/len(target)
+                val_acc += (pred == tar_indices.cpu()).sum().item()/len(target)
         
         val_loss /= len(self.dataset.val_dl)
         val_acc /= len(self.dataset.val_dl)
@@ -108,6 +111,9 @@ class skdi_detector(Utils):
                                 batch_norm=self.params.batch_norm, conv_layers=self.params.conv_layers, dropout=self.params.dropout).to(pu)
         
         self.optim = Adam(self.model.parameters(), lr=self.params.lr)
+        if self.params.schedular:
+            self.schedular = CosineAnnealingLR(self.optim, 5, eta_min=1e-8, last_epoch=-1)
+
         print(f'Model: {self.model}')
         print(f'Number of classes: {len(self.dataset.train_ds.classes)}')
         print(f'Input image size: {self.dataset.train_ds.__getitem__(0)[0][0].shape}')
@@ -130,14 +136,14 @@ class skdi_detector(Utils):
         epoch = self.check_status_file()
 
         print(f'training for {epochs - epoch} epochs....')
-        for ep in tqdm(range(epoch, epochs+1)):
+        for ep in tqdm(range(epoch, epochs)):
             train_loss, train_acc = self.train_step()
             val_loss, val_acc = self.validate_step()
 
             metric_param = {'train_loss': train_loss, 'train_acc': train_acc,
                             'val_loss': val_loss, 'val_acc': val_acc}
             
-            print(f'epochs: {ep}\t{train_loss = :.4f}\t{train_acc = :.4f}\t{val_loss = :.4f}\t{val_acc = :.4f}')
+            print(f'epochs: {ep+1}\t{train_loss = :.4f}\t{train_acc = :.4f}\t{val_loss = :.4f}\t{val_acc = :.4f}')
             self.write_plot_data([train_loss, train_acc, val_loss, val_acc])
             self.save_check_interval(epoch=ep, interval=1)
             self.save_best_model(acc_param=self.acc_param, param=metric_param[self.metric_param])

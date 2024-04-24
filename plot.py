@@ -4,13 +4,21 @@ import matplotlib.pyplot as plt
 
 
 
-data = pd.read_csv('/home/user/Skin_Diseases_Detection/plots/model_plot.txt')
+data = pd.read_csv('/home/user/Skin_Diseases_Detection/plots/fixcap_3_plot.txt')
+
+_, ax = plt.subplots(2)
+
+ax[0].plot(data['Valid_loss'], label='Validation Loss')
+ax[0].plot(data['Train_loss'], label = 'Training Loss')
+ax[0].set_ylabel('Loss')
+ax[0].legend()
+
+ax[1].plot(data['Valid_acc'], label='Validation Accuracy')
+ax[1].plot(data['Train_acc'], label = 'Training Accuracy')
+ax[1].set_ylabel('Accuracy')
+ax[1].legend()
 
 
-plt.plot(data['Valid_acc'], label='Validation accuracy')
-plt.plot(data['Train_acc'], label = 'Training accuracy')
-plt.legend()
-plt.ylabel('Accuracy')
-plt.xlabel('epochs')
+# plt.legend()
 plt.show()
 
