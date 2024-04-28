@@ -1,1 +1,1 @@
-/home/user/Skin_Diseases_Detection/checkpoints/checkpoint_1.pth
+/home/user/Skin_Diseases_Detection/checkpoints/checkpoint_54.pth

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 
-data = pd.read_csv('/home/user/Skin_Diseases_Detection/plots/fixcap_3_plot.txt')
+data = pd.read_csv('/home/user/Skin_Diseases_Detection/plots/fixcap_5_plot.txt')
 
 _, ax = plt.subplots(2)
 
@@ -20,5 +20,6 @@ ax[1].legend()
 
 
 # plt.legend()
+plt.xlabel('Epochs')
 plt.show()
 

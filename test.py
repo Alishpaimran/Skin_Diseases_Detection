@@ -32,7 +32,6 @@ mean = np.array([207.53284205, 158.27759683, 166.7383785 ])
 std = np.array([33.69236129, 39.09313952, 42.81731764])
 
 
-
 # cv.imshow('x', img)
 # cv.waitKey()
 # cv.destroyAllWindows()

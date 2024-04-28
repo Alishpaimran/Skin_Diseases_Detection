@@ -5,7 +5,7 @@ from agent import skdi_detector, pu
 
 class Params:
     def __init__(self):
-        self.name = 'fixcap_4'
+        self.name = 'fixcap_5'
         self.custom_model = True
         self.schedular = False
         self.conv_layers = [[128, 11, 2],
@@ -26,23 +26,24 @@ class Params:
         self.batch_norm = False
         self.dropout = None
         self.hid_layers = [256, 256]
-        self.lr = 0.0008
-        self.epochs = 100
+        self.lr = 0.01
+        self.epochs = 200
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
-        self.train_batch_size = 125
-        self.val_batch_size = 31
+        self.train_batch_size = 168
+        self.val_batch_size = 67
         self.test_trans = tf.Compose([
-            tf.Resize((299, 299)),
+            tf.Resize((308,308)),
+            tf.CenterCrop((299, 299)),
             tf.ToTensor(),
             tf.Normalize([0.5, 0.5, 0.5],
                          [0.5, 0.5, 0.5])
         ])
         self.train_trans = tf.Compose([
-            tf.Resize((299, 299)),
+            tf.RandomResizedCrop((299, 299)),
             tf.ToTensor(),
             tf.Normalize([0.5, 0.5, 0.5],
-                         [0.5, 0.5, 0.5])
+                         [0.5, 0.5, 0.5]),
         ])
 params = Params()
 
