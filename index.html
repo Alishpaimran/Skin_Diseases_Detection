@@ -5,26 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
         function captureFrame(){
-            var x = new XMLHttpRequest();
-            x.open('GET', '/capture_frame', true);
-            x.send();
+            window.location.href = "/result";
+            // var x = new XMLHttpRequest();
+            // x.open('GET', '/capture_frame', true);
+            // x.send();
         }
     </script>
     <style>
         .container {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 20%;
+            left: 5%;
+            border: 3px #000;
         }
         h1 {text-align:center;}
+        .line {
+            position: absolute;
+            top: 20%;
+            bottom: 0;
+            left: 40%; 
+            width: 4px;
+            height: 75vh;
+            background-color: black;
+            margin-left: -1px;
+        }
+        p {
+            position: absolute;
+            top: 25%;
+            left: 45%;
+        }
+        button{
+            position: absolute;
+            top: 50%;
+            left: 45%
+        }
     </style>
 </head>
 <body>
     <h1>Skin Disease Detection Using Deep Learning Technique</h1>
+    <div class="line"></div>
     <div class="container">
         <img src="/video_feed">
     </div>
-    <button onclick="captureFrame()">Capture Frame</button>>
+    <p>This is a real-time demonstration of skin disease detection</p>
+    <button onclick="captureFrame()">Detect Disease</button>
 </body>
 </html>

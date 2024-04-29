@@ -26,8 +26,8 @@ class Params:
         self.batch_norm = False
         self.dropout = None
         self.hid_layers = [256, 256]
-        self.lr = 0.01
-        self.epochs = 200
+        self.lr = 0.15
+        self.epochs = 300
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
         self.train_batch_size = 168
