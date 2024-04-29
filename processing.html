@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column; /* Align items vertically */
+        }
+        #container {
+            text-align: center;
+        }
+        #imgcontainer{
+            margin-bottom: 10px;
+        }
+        #processingtext {
+            margin-bottom: 20px;
+            font-size: 48px;
+        }
+        #button {
+            background-color: green; /* Set background color to green */
+            padding: 10px 20px; /* Add padding to increase button size */
+            border: none; /* Remove border */
+            color: white; /* Text color */
+            font-size: 16px; /* Font size */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Cursor style */
+        }
+        #button:hover {
+            background-color: darkgreen; /* Darken the color on hover */
+        }
+    </style>   
+</head>
+<body>
+    <div id="container">
+        <div id="imgcontainer"></div>
+        <div id="processingtext"></div>
+        <button id="button">Go Back</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var textContainer = document.getElementById('processingtext');
+            function updateProcessingText() {
+            var dots = '';
+            var interval = setInterval(function() {
+                dots += '.';
+                textContainer.textContent = 'Processing' + dots;
+                if (dots.length > 3) {
+                    dots = '';
+                }
+            }, 500);
+            
+            return interval;}
+
+            var loadingInterval = updateProcessingText();
+            fetch('/capture_frame')
+            .then(response => response.json())
+            .then(data => {
+                clearInterval(loadingInterval);
+                var resultString = data.string;
+                var imgData = data.img
+
+                var imgContainer = document.getElementById('imgcontainer');
+                var img = document.createElement('img')
+                img.src = 'data:img/jpeg;base64,'+imgData;
+                imgContainer.appendChild(img);
+                textContainer.textContent = resultString;
+            })
+            var backButton = document.getElementById('button');
+            backButton.addEventListener('click', function() {
+                // Redirect to the index page
+                window.location.href = '/';
+            });
+        });
+    </script>
+</body>
+</html>

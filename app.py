@@ -1,13 +1,15 @@
-from flask import Flask, send_from_directory, Response, render_template_string, jsonify
+from flask import Flask, send_from_directory, Response, jsonify
 import cv2 as cv
+import base64
 import time
 
-
+cam = None
 app = Flask(__name__)
-cam = cv.VideoCapture(0)
 curr_frame = None
 @app.route('/')
 def index():
+    global cam
+    cam = cv.VideoCapture(0)
     return send_from_directory('', 'index.html')
 
 def gen_frames():
@@ -18,7 +20,7 @@ def gen_frames():
         if not success:
             break
         else:
-            frame = cv.resize(frame, dsize=(400, 400))
+            # frame = cv.resize(frame, dsize=(400, 400))
             curr_frame = frame
             ret, buff = cv.imencode('.jpg', frame)
             frame=buff.tobytes()
@@ -31,45 +33,17 @@ def video_feed():
 
 @app.route('/capture_frame', methods=['GET'])
 def capture_frame():
-    time.sleep(10)
-
-    return 
+    global curr_frame, cam
+    time.sleep(5)
+    _, frame = cv.imencode('.jpg', curr_frame)
+    img_data = base64.b64encode(frame).decode()
+    content = "The Detected Disease is: "
+    cam.release()
+    return jsonify(string=content, img=img_data)
 
 @app.route('/result')
 def processing():
-    content = """<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Processing...</title>
-            <style>
-                body, html {
-                    height: 100%;
-                    margin: 0;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    background-color: #f0f0f0; /* Optional background color */
-                }
-
-                #processingtext {
-                    font-size: 48px;
-                    text-align: center;
-                }
-            </style>
-        </head>
-        <body>
-            <div id="processingtext"></div>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                var textContainer = document.getElementById('processingtext');
-                textContainer.textContent = 'Processing...';
-                });
-            </script>
-        </body>
-        </html>"""
-    return render_template_string(content)
+    return send_from_directory('', 'processing.html')
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=8000)
