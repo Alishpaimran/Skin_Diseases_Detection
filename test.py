@@ -14,7 +14,7 @@ thickness = 4
 
 n_img = img[st_y:end_y, st_x:end_x]
 
-image_with_box = cv.rectangle(img, (st_x, st_y), (end_x, end_y), color, thickness)
+image_with_box = cv.rectangle(img, (st_x-3, st_y-3), (end_x+3, end_y+3), color, thickness)
 
 cv.imshow('x', img)
 cv.imshow('y', n_img)
