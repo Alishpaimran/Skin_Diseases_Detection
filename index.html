@@ -6,48 +6,71 @@
     <script>
         function captureFrame(){
             window.location.href = "/result";
-            // var x = new XMLHttpRequest();
-            // x.open('GET', '/capture_frame', true);
-            // x.send();
         }
     </script>
     <style>
-        .container {
-            position: absolute;
-            top: 20%;
-            left: 5%;
-            border: 3px #000;
+        .wrapper {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-top: 5%;
         }
-        h1 {text-align:center;}
+        .container {
+            max-width: 35%;
+            margin-left: 5%;
+            /* position: relative; */
+        }
+        img{
+            width: 100%;
+        }
+        h1 {text-align:center;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 300%;}
         .line {
             position: absolute;
             top: 20%;
             bottom: 0;
-            left: 40%; 
+            left: 45%;
             width: 4px;
             height: 75vh;
             background-color: black;
             margin-left: -1px;
         }
-        p {
-            position: absolute;
-            top: 25%;
-            left: 45%;
+        .paragraph{
+            margin-top: -25%;
+            margin-left: 50%;
         }
-        button{
-            position: absolute;
-            top: 50%;
-            left: 45%
+        p {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 120%;
+        }
+        button {
+            background-color: green; /* Set background color to green */
+            padding: 10px 20px; /* Add padding to increase button size */
+            border: none; /* Remove border */
+            color: white; /* Text color */
+            font-size: 16px; /* Font size */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Cursor style */
+        }
+        button:hover {
+            background-color: darkgreen; /* Darken the color on hover */
         }
     </style>
 </head>
 <body>
     <h1>Skin Disease Detection Using Deep Learning Technique</h1>
-    <div class="line"></div>
-    <div class="container">
-        <img src="/video_feed">
+    <div class="wrapper">
+        <div class="container">
+            <img src="/video_feed">
+        </div>
     </div>
-    <p>This is a real-time demonstration of skin disease detection</p>
-    <button onclick="captureFrame()">Detect Disease</button>
+    <div class="line"></div>
+    <div class="paragraph">
+        <p><b>This is a real-time demonstration of skin disease detection</b><br>
+        To detect the skin disease try to fix the disease in the square and click on<br>
+        "Detect Disease" button to show results</p>
+        <button onclick="captureFrame()">Detect Disease</button>
+    </div>
 </body>
 </html>

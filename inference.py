@@ -24,14 +24,14 @@ test_model = FixCapsNet(conv_inputs= 3,
 												
 
 classes = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
-model_path = '/home/user/Skin_Diseases_Detection/model/fixcap_3_model.pth'
+model_path = '/home/user/Skin_Diseases_Detection/checkpoints/checkpoint_232.pth'
 
-test_model.load_state_dict(torch.load(model_path))
+test_model.load_state_dict(torch.load(model_path)['model_state_dict'])
 test_model.eval()
 
 start = time.time()
 
-img = cv.imread('/home/user/skdi_dataset/base_dir/val_dir/nv/ISIC_0029490.jpg')
+img = cv.imread('/home/user/melanoma-pictures-mc-230804-01-7faa39.jpg')
 img = cv.resize(img, (299, 299))
 img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
 img = np.asarray(img, dtype=np.uint8)

@@ -1,37 +1,22 @@
 import cv2 as cv
-import torch
-import numpy as np
-from paths import TRAINING_FOLDER
-from torchvision.datasets import ImageFolder
-from torch.utils.data import DataLoader
-import random
-from torchvision.transforms import transforms as tf
 
-trans = tf.Compose([
-    tf.Resize(size=(64, 64)),
-    tf.ToTensor()
-])
-
-val_ds = ImageFolder(TRAINING_FOLDER, trans)
-
-images = []
-
-for i in range(10):
-    ind = random.randint(0, len(val_ds)-1)
-    img = val_ds.__getitem__(ind)[0]
-    images.append(img)
-    # img = img.numpy()
-    # img = img.transpose((1, 2, 0)) if img.shape[0] == 3 else img
-
-images = torch.stack(images)
-print(images)
-
-print(images.mean(dim=(-1)))
-
-mean = np.array([207.53284205, 158.27759683, 166.7383785 ])
-std = np.array([33.69236129, 39.09313952, 42.81731764])
+img = cv.imread('/home/user/skdi_dataset/base_dir/val_dir/vasc/ISIC_0025452.jpg')
 
 
-# cv.imshow('x', img)
-# cv.waitKey()
-# cv.destroyAllWindows()
+size = img.shape
+st_x, st_y = size[1]//2 - 151, size[0]//2 - 151
+end_x, end_y = st_x+300, st_y+300
+
+color = (0, 255, 0)  # Green color in this case
+
+# Define the thickness of the box lines
+thickness = 4
+
+n_img = img[st_y:end_y, st_x:end_x]
+
+image_with_box = cv.rectangle(img, (st_x, st_y), (end_x, end_y), color, thickness)
+
+cv.imshow('x', img)
+cv.imshow('y', n_img)
+cv.waitKey()
+cv.destroyAllWindows()

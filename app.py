@@ -4,6 +4,16 @@ import base64
 import time
 
 cam = None
+cam = cv.VideoCapture(0)
+_, img = cam.read()
+size = img.shape
+st_x, st_y = size[1]//2 - 151, size[0]//2 - 151
+end_x, end_y = st_x+300, st_y+300
+color = (0, 255, 0)
+thickness = 5
+cam.release()
+
+
 app = Flask(__name__)
 curr_frame = None
 @app.route('/')
@@ -20,12 +30,13 @@ def gen_frames():
         if not success:
             break
         else:
-            # frame = cv.resize(frame, dsize=(400, 400))
             curr_frame = frame
+            frame = cv.rectangle(frame, (st_x, st_y), (end_x, end_y), color, thickness)
             ret, buff = cv.imencode('.jpg', frame)
             frame=buff.tobytes()
             yield(b'--frame\r\n'
                   b'Content-Type: image/jpeg\r\n\r\n'+frame+b'\r\n')
+            frame = None
             
 @app.route('/video_feed')
 def video_feed():
@@ -33,9 +44,9 @@ def video_feed():
 
 @app.route('/capture_frame', methods=['GET'])
 def capture_frame():
-    global curr_frame, cam
-    time.sleep(5)
-    _, frame = cv.imencode('.jpg', curr_frame)
+    _, frame = cam.read()
+    frame = frame[st_y:end_y, st_x:end_x]
+    _, frame = cv.imencode('.jpg', frame)
     img_data = base64.b64encode(frame).decode()
     content = "The Detected Disease is: "
     cam.release()
