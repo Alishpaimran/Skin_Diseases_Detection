@@ -31,7 +31,7 @@ test_model.eval()
 
 start = time.time()
 
-img = cv.imread('/home/user/skdi_dataset/base_dir/val_dir/vasc/ISIC_0029439.jpg')
+img = cv.imread('/home/user/skdi_dataset/base_dir/val_dir/bcc/ISIC_0028316.jpg')
 img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
 
 print(img.shape)
