@@ -34,7 +34,7 @@ test_model = FixCapsNet(conv_inputs= 3,
 						init_weights=True,mode="128").to(pu)
 
 classes = ['Actnic Keratosis', 'Basal Cell Carcinoma', 'Benign Keratosis', 'Dermatofibroma', 'Melanoma', 'Melanocytic Nevus', 'Vacular Lesion']
-model_path = '/home/user/Skin_Diseases_Detection/checkpoints/checkpoint_232.pth'
+model_path = '/home/user/Skin_Diseases_Detection/model/fix_cap6.pth'
 
 test_model.load_state_dict(torch.load(model_path)['model_state_dict'])
 test_model.eval()
