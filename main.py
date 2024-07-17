@@ -2,6 +2,7 @@ from torchvision import disable_beta_transforms_warning
 disable_beta_transforms_warning()
 import torchvision.transforms.v2 as tf
 from agent import skdi_detector, pu
+from sklearn.metrics import precision_score, f1_score
 
 class Params:
     def __init__(self):
@@ -14,12 +15,6 @@ class Params:
                             [128, 5, 1],
                             [128, 3, 1],
                             [512, 3, 1]]
-                            # [512, 5, 1]]
-                            # [128, 3, 1],
-                            # [256, 3, 1],
-                            # [512, 3, 1]]
-                            # [512, 3, 1],
-                            # [512, 3, 1]]
         self.max_pool = [2, 2]
         self.pool_after_layers = 3
         self.act_fn = 'relu'
@@ -33,7 +28,7 @@ class Params:
         self.train_batch_size = 168
         self.val_batch_size = 67
         self.test_trans = tf.Compose([
-            tf.Resize((308,308)),
+            tf.Resize((308, 308)),
             tf.CenterCrop((299, 299)),
             tf.ToTensor(),
             tf.Normalize([0.5, 0.5, 0.5],
@@ -52,8 +47,34 @@ agent = skdi_detector(params)
 agent.create_model()
 print(f'training dataset size: {len(agent.dataset.train_ds)}')
 print(f'validation dataset size: {len(agent.dataset.val_ds)}')
+//evaluation 
+def evaluate_model(agent):
+    val_loader = agent.dataset.val_loader
+    all_preds = []
+    all_labels = []
+    
+    agent.model.eval()
+    with torch.no_grad():
+        for data in val_loader:
+            inputs, labels = data
+            outputs = agent.model(inputs)
+            _, preds = torch.max(outputs, 1)
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
+    
+    precision = precision_score(all_labels, all_preds, average='macro')
+    f1 = f1_score(all_labels, all_preds, average='macro')
+    
+    return precision, f1
+
+# Training loop
+for epoch in range(params.epochs):
+    agent.train_one_epoch(epoch)
+    
+    if epoch % 10 == 0:  # Evaluate every 10 epochs
+        precision, f1 = evaluate_model(agent)
+        print(f'Epoch {epoch}: Precision: {precision:.4f}, F1 Score: {f1:.4f}')
 
 agent.train()
-
 
 
